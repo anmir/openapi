@@ -1,0 +1,133 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.1
+  title: api
+
+servers:
+  - url: localhost
+
+paths:
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: 'user identificator'
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+
+        - name: limit
+          in: query
+          required: false
+          description: limit
+          schema:
+            type: integer
+            format: int64
+            example: 100
+        - name: role
+          in: query
+          required: false
+          description: role
+          schema:
+            type: string
+            enum: [user, sudo, power]
+        - name: field
+          in: header
+          required: false
+          description:  fields header
+          schema:
+            type: string
+            enum: [id, name]
+            default: id
+            nullable: false
+      responses:
+        200:
+          description: 'everithing is ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users:
+    post:
+      summary: create user
+      operationId: createUser
+      requestBody:
+        description: body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+tags:
+  - name: users
+    description: users api
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        things:
+          type: array
+          items:
+            $ref: '#/components/schemas/Thing'
+      required:
+        - id
+        - name
+    Thing:
+      oneOf:
+        - $ref: '#/components/schemas/Book'
+        - $ref: '#/components/schemas/Card'
+      properties:
+        type:
+          type: string
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/Thing'
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        content:
+          type: string
+
+    Card:
+      allOf:
+        - $ref: '#/components/schemas/Thing'
+      properties:
+        id:
+          type: integer
+          default: cardId
+        name:
+          type: string
+          default: cardName
+        rank:
+          type: string
+          enum: [1, 2, 3, 4]
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

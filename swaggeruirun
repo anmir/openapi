@@ -1,0 +1,2 @@
+docker run -d -p 80:8080 -e URLS="[{name:\"v20\", url:\"/foo/v20.yaml\"}, {name:\"v21\", url:\"/foo/v21.yaml\"},{name:\"v22\", url:\"/foo/v22.yaml\"}]" -v /home:/foo swaggerapi/swagger-ui
+
